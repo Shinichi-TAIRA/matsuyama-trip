@@ -173,39 +173,59 @@ header {
 /* Weather Widget */
 .weather-widget {
     position: absolute;
-    bottom: 30px;
-    right: 30px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px 25px;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 15px;
     border-radius: 4px;
-    /* Sharp corners fits Wa-modern better than rounded */
     color: var(--indigo);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     border-left: 4px solid var(--gold);
     text-align: left;
+    max-width: 280px;
 }
 
 .weather-header {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #666;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
 }
 
-.weather-info {
+.weather-items-container {
     display: flex;
-    align-items: center;
     gap: 15px;
+    justify-content: space-between;
+}
+
+.weather-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.weather-date {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.weather-icon {
+    font-size: 1.2rem;
+    margin: 2px 0;
 }
 
 .weather-temp {
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-family: var(--font-serif);
     font-weight: bold;
 }
 
 .weather-desc {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
+    color: #555;
 }
 
 /* Sections */
@@ -315,9 +335,9 @@ footer {
         position: relative;
         bottom: auto;
         right: auto;
-        margin: -40px auto 40px;
-        /* Pull up to overlap hero */
-        width: 80%;
-        max-width: 300px;
+        margin: 20px auto 0;
+        /* Positive margin to sit below hero content */
+        width: 85%;
+        max-width: 320px;
     }
 }
