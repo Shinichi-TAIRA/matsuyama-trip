@@ -37,23 +37,89 @@
             </div>
             <div class="weather-widget">
                 <div class="weather-header">松山の天気</div>
-                <div class="weather-items-container">
+                <div class="weather-items-container" id="weather-container">
+                    <!-- Loading state or placeholders will be replaced by JS -->
                     <div class="weather-item">
-                        <div class="weather-date">01.24</div>
-                        <div class="weather-icon">⛅</div>
-                        <div class="weather-temp">14°C / 5°C</div>
-                        <div class="weather-desc">晴れ時々曇り</div>
-                    </div>
-                    <div class="weather-item">
-                        <div class="weather-date">01.25</div>
-                        <div class="weather-icon">☁️</div>
-                        <div class="weather-temp">12°C / 8°C</div>
-                        <div class="weather-desc">曇り</div>
+                        <div class="weather-date">-</div>
+                        <div class="weather-icon">⌛</div>
+                        <div class="weather-temp">-</div>
+                        <div class="weather-desc">Loading...</div>
                     </div>
                 </div>
-                <div style="font-size: 0.8rem; margin-top: 5px; color: #888;">※朝晩は冷え込みます</div>
+                <div style="font-size: 0.8rem; margin-top: 5px; color: #888;">※現在の松山の天気</div>
             </div>
         </div>
+    </div>
+
+    <!-- ... (rest of body) ... -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', fetchWeather);
+
+        async function fetchWeather() {
+            const container = document.getElementById('weather-container');
+            // Matsuyama coordinates
+            const url = 'https://api.open-meteo.com/v1/forecast?latitude=33.8416&longitude=132.7653&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia/Tokyo&forecast_days=2';
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const daily = data.daily;
+
+                let html = '';
+                const today = new Date();
+
+                // Weather Code Map
+                const getWeatherIcon = (code) => {
+                    if (code === 0) return '☀️';
+                    if ([1, 2, 3].includes(code)) return '⛅';
+                    if ([45, 48].includes(code)) return '🌫️';
+                    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '🌧️';
+                    if ([71, 73, 75, 77, 85, 86].includes(code)) return '❄️';
+                    if (code >= 95) return '⛈️';
+                    return '☁️';
+                };
+
+                const getWeatherDesc = (code) => {
+                    if (code === 0) return '快晴';
+                    if ([1, 2, 3].includes(code)) return '曇り/晴れ';
+                    if ([45, 48].includes(code)) return '霧';
+                    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return '雨';
+                    if ([71, 73, 75, 77, 85, 86].includes(code)) return '雪';
+                    if (code >= 95) return '雷雨';
+                    return '曇り';
+                };
+
+                for (let i = 0; i < 2; i++) {
+                    const dateObj = new Date(daily.time[i]);
+                    const month = dateObj.getMonth() + 1;
+                    const day = dateObj.getDate();
+                    const dateStr = `${month.toString().padStart(2, '0')}.${day.toString().padStart(2, '0')}`;
+
+                    const maxTemp = Math.round(daily.temperature_2m_max[i]);
+                    const minTemp = Math.round(daily.temperature_2m_min[i]);
+                    const icon = getWeatherIcon(daily.weather_code[i]);
+                    const desc = getWeatherDesc(daily.weather_code[i]);
+
+                    html += `
+                        <div class="weather-item">
+                            <div class="weather-date">${dateStr}</div>
+                            <div class="weather-icon">${icon}</div>
+                            <div class="weather-temp">${maxTemp}°C / ${minTemp}°C</div>
+                            <div class="weather-desc">${desc}</div>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error('Weather fetch error:', error);
+                container.innerHTML = '<div style="font-size:0.8rem; color:red;">天気情報の取得に<br>失敗しました</div>';
+            }
+        }
+    </script>
+
     </div>
 
     <section id="concept">
